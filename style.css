@@ -24,6 +24,38 @@ section > div {
     margin-bottom: 20px;
 }
 
+#suggestions {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px; /* Abstand zwischen den Buttons */
+    margin-top: 20px;
+    margin-left: 20px;
+}
+
+#suggestions button {
+    background-color: #FAB17C;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+#suggestions button:hover {
+    background-color: #D99465; /* Etwas dunklerer Farbton für den Hover-Effekt */
+}
+
+#buttonInstructions ul {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+#buttonInstructions li {
+    margin-bottom: 10px;
+}
+
 .plot-container-wrapper {
     display: flex;
     flex-wrap: wrap;
@@ -33,7 +65,7 @@ section > div {
 
 textarea#inputText {
     width: 100%;
-    max-width: 800px;
+    max-width: 1000px;
     height: 150px;
     font-size: 16px;
     padding: 10px;
@@ -43,13 +75,15 @@ textarea#inputText {
     color: white;
     resize: none;
     box-sizing: border-box;
+    margin-left: 20px;
 }
 
 #predictionButtons {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 15px;
     margin-top: 20px;
+    margin-left: 20px;
 }
 
 button {
@@ -167,10 +201,9 @@ h1 strong {
 
 h2 {
     margin-top: 20px;
-    margin-left: 0;
+    margin-left: 20px;
     margin-right: 0;
     color: #FAB17C;
-    text-align: center;
 }
 
 h3 {

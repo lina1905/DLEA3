@@ -8,6 +8,30 @@ let intervalId = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     const input = document.getElementById('inputText');
+    const buttons = document.querySelectorAll('#predictionButtons button');
+    const errorMessage = document.createElement('p');
+    errorMessage.id = 'error-message';
+    errorMessage.style.color = 'red';
+    errorMessage.style.fontSize = 'smaller';
+    errorMessage.style.marginTop = '10px';
+    input.insertAdjacentElement('afterend', errorMessage);
+
+    input.addEventListener('input', () => {
+        const isValid = /^[a-zA-ZäöüÄÖÜß\s]*$/.test(input.value.trim());
+        buttons.forEach(button => {
+            button.disabled = !isValid;
+        });
+
+        if (!isValid) {
+            errorMessage.textContent = 'Ungültige Eingabe: Bitte keine Sonderzeichen verwenden.';
+        } else {
+            errorMessage.textContent = '';
+        }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('inputText');
     const suggestionsDiv = document.getElementById('suggestions');
     const predictBtn = document.getElementById('predictBtn');
     const nextBtn = document.getElementById('nextBtn');
@@ -111,7 +135,7 @@ async function predictNextWords(inputText) {
 
     const topWords = topIndices.map(([i, prob]) => ({
         word: indexWord[i] || `[${i}]`,
-        probability: prob.toFixed(4)
+        probability: (prob * 100).toFixed(2) + '%' // Wahrscheinlichkeit in Prozent
     }));
 
     inputTensor.dispose();

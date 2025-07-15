@@ -14,6 +14,7 @@
 </header>
 
 <section>
+    <h3>Gib einen Text ein...</h3>
     <textarea id="inputText" placeholder="Gib einen Text ein..." rows="4" cols="50"></textarea>
     <div id="suggestions"></div>
     <div id="predictionButtons">
@@ -23,32 +24,109 @@
         <button id="stopBtn">Stopp</button>
         <button id="resetBtn">Reset</button>
     </div>
+    <div id="buttonInstructions">
+        <ul>
+            <li><strong>Vorhersage:</strong> Der Nutzer kann einen Text (Prompt) eingeben und den Button „Vorhersage“
+                betätigen, um die wahrscheinlichsten nächsten Wörter mit deren Wahrscheinlichkeiten anzuzeigen.
+                Ein ausgewähltes Wort wird an den Text angehängt, und eine neue Vorhersage beginnt automatisch.</li>
+            <li><strong>Weiter:</strong> Der Button „Weiter“ fügt das wahrscheinlichste vorhergesagte Wort an den Text
+                an und startet automatisch eine neue Vorhersage. Durch wiederholtes Klicken kann ein Text generiert werden.</li>
+            <li><strong>Auto:</strong> Der Button „Auto“ lässt automatisch bis zu 10 Wörter vorhersagen.
+                Die automatische Vorhersage kann mit dem Button „Stopp“ unterbrochen werden.</li>
+            <li><strong>Reset:</strong> Der Button „Reset“ setzt den eingegebenen Text und das Netzwerk zurück.</li>
+        </ul>
+    </div>
+    <p style="font-size: smaller; font-style: italic; margin-left: 20px;">
+        Hinweis: Das Modell ist leider nicht optimal trainiert, daher sind die vorgeschlagenen Vorhersagen sehr vage.
+        Mehr Informationen finden sich in der Diskussion.
+    </p>
 </section>
 
-<section>
-    <h2>Diskussion</h2>
-    <p id="discussion-text">
-        Jo
-    </p>
-    <p>
-        Weiter
-    </p>
-</section>
 
 <section>
     <h2>Dokumentation</h2>
     <h3>Technisch</h3>
     <ul>
-        <li>Punkt 1</li>
-        <li>Punkt 2</li>
-        <li>Punkt 3</li>
+        <li>TensorFlow.js (TFJS): Ermöglicht das Erstellen, Trainieren und Ausführen des LSTM-Modells direkt im Browser und Node.js.</li>
+        <li>Node.js: Für Server-seitige Datenverarbeitung</li>
+        <li>HTML, CSS, JavaScript: Für die Gestaltung der Benutzeroberfläche und Umsetzung von Interaktionen</li>
+    </ul>
+    <p>Technische Besonderheiten</p>
+    <ul>
+        <li>Persistente Speicherung der Tokenizer-Daten (word-to-index Mapping) in JSON-Dateien zur Wiederverwendung und einfacheren Modellbereitstellung.</li>
+        <li>ombination aus Dropout und Recurrent Dropout in LSTM-Schichten zur besseren Generalisierung und Vermeidung von Overfitting.</li>
+        <li>Implementierung eines Early-Stopping-Mechanismus beim Training, der den Validierungsverlust überwacht und
+            das Training bei stagnierender Verbesserung abbricht.</li>
     </ul>
 
     <h3>Fachlich</h3>
     <p>
-        LOLOLOLOLO
+        Die Anwendung basiert auf einem zweischichtigen LSTM-Netzwerk mit jeweils 100 Einheiten, das mit einer Einbettungsschicht
+        (Embedding-Dimension 64) gestartet wird. Die Wahl dieser Architektur wurde nach experimentellen Tests getroffen,
+        um ein Gleichgewicht zwischen Modellkomplexität und Rechenaufwand zu gewährleisten. Die Trainingsdaten stammen aus
+        dem Projekt Gutenberg, sorgfältig vorverarbeitet und auf ein Vokabular von 4642 Wörtern begrenzt.
+    </p>
+    <p>
+        Für die Vorhersage wird eine Eingabesequenz von 8 Wörtern genutzt, auf deren Basis das Modell das nächste Wort
+        vorhersagt. Die Ausgabe ist eine Wahrscheinlichkeitsverteilung über das gesamte Vokabular mittels Softmax.
+        Die Loss-Funktion ist kategorische Kreuzentropie, der Optimierer Adam mit einer initialen Lernrate von 0.001, die im Feintuning auf 0.00001 gesenkt wurde.
+    </p>
+    <p>
+        Beim Training des Modells wurde ein mehrstufiger Ansatz verfolgt: Zunächst wurde das Modell über mehrere
+        Trainingsrunden mit einer moderaten Lernrate trainiert, um eine solide Grundbasis zu schaffen. Danach
+        erfolgte ein Feintuning mit deutlich reduzierter Lernrate und in jeder Runde steigender Datenmenge. Zwischen
+        den
+        Trainingsphasen wurde das Modell
+        regelmäßig anhand eines Validierungsdatensatzes evaluiert, um Overfitting zu vermeiden und den Trainingsprozess
+        optimal zu steuern. Das mehrstufige Training führte zu einer stabileren Konvergenz und besseren Generalisierung auf unbekannte Texte.
     </p>
 </section>
+
+<section>
+    <h2>Diskussion</h2>
+    <p id="discussion-text">
+        Das entwickelte LSTM-basierte Language Model zeigt grundsätzlich, dass mit einer relativ einfachen Architektur und
+        literarischen Trainingsdaten eine funktionierende Wortvorhersage möglich ist. Die Top-1 Accuracy von etwa 7,4 % mag
+        zunächst niedrig erscheinen, lässt sich aber durch die große Anzahl an möglichen Wortklassen (4642 Wörter) und den
+        speziellen Stil der Gutenberg-Texte erklären. Die Verbesserung der Trefferquote bei Top-k-Werten verdeutlicht,
+        dass das Modell viele sinnvolle Kandidaten generiert, die dem richtigen Wort nahekommen.
+    </p>
+    <p>
+        Die Wahl einer Kontextlänge von acht Wörtern erwies sich als praktikabler Kompromiss zwischen Rechenaufwand und
+        ausreichendem Kontext für sinnvolle Vorhersagen. Längere Sequenzen könnten die Vorhersagequalität weiter verbessern, erhöhen aber auch die Trainingsdauer und den Speicherbedarf.
+    </p>
+    <p>
+        Die Verwendung von Dropout und Recurrent Dropout half, Overfitting zu vermeiden, und das frühzeitige Stoppen des
+        Trainings basierend auf dem Validierungsverlust unterstützte eine robuste Modellbildung. Dennoch zeigen die Ergebnisse,
+        dass die Modellarchitektur und Hyperparameter noch weiter optimiert werden können, etwa durch Erhöhung der Embedding-Dimension, mehr LSTM-Schichten oder experimentelles Feintuning der Lernrate.
+    </p>
+    <h2>Datenschutzbetrachtung: Rekonstruktion der Trainingsdaten</h2>
+
+    <p>
+        Die Rekonstruktion der ursprünglichen Trainingsdaten ist mit dem trainierten Modell in der vorliegenden Form nicht
+        direkt möglich. Das Modell speichert keine exakten Textpassagen oder vollständige Sätze, sondern abstrahiert statistische
+        Zusammenhänge und Wahrscheinlichkeiten von Wortfolgen auf Basis der Trainingsdaten. Die Generierung von Texten erfolgt
+        somit nicht durch "Abrufen" gespeicherter Inhalte, sondern durch probabilistische Vorhersagen des nächsten Wortes basierend auf dem gegebenen Kontext.
+    </p>
+
+    <p>
+        Allerdings könnten unter bestimmten Bedingungen theoretisch ähnliche oder sogar identische Passagen erzeugt
+        werden,
+        insbesondere dann, wenn das Modell übertrainiert wurde (Overfitting) oder wenn sehr kurze und häufig vorkommende
+        Sätze im Trainingsmaterial enthalten waren. In solchen Fällen könnten Fragmente oder Formulierungen, die stark im
+        Trainingsdatensatz vertreten waren, zufällig oder regelhaft reproduziert werden.
+    </p>
+
+    <p>
+        Im konkreten Projekt wurde ausschließlich mit gemeinfreien Texten aus dem Gutenberg-Projekt gearbeitet,
+        wodurch keine datenschutzrechtlichen Risiken bestehen. Würde jedoch ein ähnliches Modell mit personenbezogenen
+        oder urheberrechtlich geschützten Daten trainiert werden, könnten sich potenzielle Datenschutzprobleme
+        ergeben, insbesondere im Hinblick auf die Reproduzierbarkeit sensibler Informationen. In solchen Fällen wären
+        zusätzliche Schutzmaßnahmen wie Differential Privacy oder gezielte Regularisierung notwendig.
+    </p>
+
+</section>
+
 </div>
 </body>
 </html>
