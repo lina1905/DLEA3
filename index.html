@@ -51,12 +51,14 @@
         <li>Node.js: Für Server-seitige Datenverarbeitung</li>
         <li>HTML, CSS, JavaScript: Für die Gestaltung der Benutzeroberfläche und Umsetzung von Interaktionen</li>
     </ul>
-    <p>Technische Besonderheiten</p>
+    <p><b>Technische Besonderheiten</b></p>
     <ul>
         <li>Persistente Speicherung der Tokenizer-Daten (word-to-index Mapping) in JSON-Dateien zur Wiederverwendung und einfacheren Modellbereitstellung.</li>
-        <li>ombination aus Dropout und Recurrent Dropout in LSTM-Schichten zur besseren Generalisierung und Vermeidung von Overfitting.</li>
+        <li>Kombination aus Dropout und Recurrent Dropout in LSTM-Schichten zur besseren Generalisierung und
+            Vermeidung von Overfitting.</li>
         <li>Implementierung eines Early-Stopping-Mechanismus beim Training, der den Validierungsverlust überwacht und
             das Training bei stagnierender Verbesserung abbricht.</li>
+        <li>In der Webanwendung: Überprüfung der Eingabe, damit nur Wörter eingegeben werden können.</li>
     </ul>
 
     <h3>Fachlich</h3>
@@ -64,7 +66,13 @@
         Die Anwendung basiert auf einem zweischichtigen LSTM-Netzwerk mit jeweils 100 Einheiten, das mit einer Einbettungsschicht
         (Embedding-Dimension 64) gestartet wird. Die Wahl dieser Architektur wurde nach experimentellen Tests getroffen,
         um ein Gleichgewicht zwischen Modellkomplexität und Rechenaufwand zu gewährleisten. Die Trainingsdaten stammen aus
-        dem Projekt Gutenberg, sorgfältig vorverarbeitet und auf ein Vokabular von 4642 Wörtern begrenzt.
+        dem Projekt Gutenberg, sorgfältig vorverarbeitet.
+    </p>
+    <p>
+        Zur Vorbereitung der Daten wurden die Rohdaten aus dem Gutenberg-Projekt zunächst in Sätze segmentiert.
+        Sätze mit weniger als 3 Wörtern wurden ausgeschlossen. Wörter die weniger als 3 mal im Text vorkommen,
+        wurden auch ausgeschlossen. Dadurch
+        entstand ein Vokabular von 4642 Wörtern.
     </p>
     <p>
         Für die Vorhersage wird eine Eingabesequenz von 8 Wörtern genutzt, auf deren Basis das Modell das nächste Wort
@@ -74,11 +82,16 @@
     <p>
         Beim Training des Modells wurde ein mehrstufiger Ansatz verfolgt: Zunächst wurde das Modell über mehrere
         Trainingsrunden mit einer moderaten Lernrate trainiert, um eine solide Grundbasis zu schaffen. Danach
-        erfolgte ein Feintuning mit deutlich reduzierter Lernrate und in jeder Runde steigender Datenmenge. Zwischen
+        erfolgte ein Feintuning mit deutlich reduzierter Lernrate. In jeder Runde wurde die Datenmenge erhöht. Zwischen
         den
         Trainingsphasen wurde das Modell
         regelmäßig anhand eines Validierungsdatensatzes evaluiert, um Overfitting zu vermeiden und den Trainingsprozess
         optimal zu steuern. Das mehrstufige Training führte zu einer stabileren Konvergenz und besseren Generalisierung auf unbekannte Texte.
+    </p>
+    <p>
+        Die finale Validierungsgenauigkeit lag bei ca 7,4 % für k = 1. Über die Trainingszeit zeigte sich eine
+        Verbesserung der Loss-Werte und damit der Lernfortschritt. Jedoch konnte leider keine bessere
+        Validierungsgenauigkeit erreicht werden. Das Modell ist damit noch nicht optimal trainiert.
     </p>
 </section>
 
@@ -89,7 +102,7 @@
         literarischen Trainingsdaten eine funktionierende Wortvorhersage möglich ist. Die Top-1 Accuracy von etwa 7,4 % mag
         zunächst niedrig erscheinen, lässt sich aber durch die große Anzahl an möglichen Wortklassen (4642 Wörter) und den
         speziellen Stil der Gutenberg-Texte erklären. Die Verbesserung der Trefferquote bei Top-k-Werten verdeutlicht,
-        dass das Modell viele sinnvolle Kandidaten generiert, die dem richtigen Wort nahekommen.
+        dass das Modell viele sinnvolle Wörter generiert, die dem richtigen Wort nahekommen.
     </p>
     <p>
         Die Wahl einer Kontextlänge von acht Wörtern erwies sich als praktikabler Kompromiss zwischen Rechenaufwand und
@@ -100,8 +113,7 @@
         Trainings basierend auf dem Validierungsverlust unterstützte eine robuste Modellbildung. Dennoch zeigen die Ergebnisse,
         dass die Modellarchitektur und Hyperparameter noch weiter optimiert werden können, etwa durch Erhöhung der Embedding-Dimension, mehr LSTM-Schichten oder experimentelles Feintuning der Lernrate.
     </p>
-    <h2>Datenschutzbetrachtung: Rekonstruktion der Trainingsdaten</h2>
-
+    <h3>Datenschutzbetrachtung: Rekonstruktion der Trainingsdaten</h3>
     <p>
         Die Rekonstruktion der ursprünglichen Trainingsdaten ist mit dem trainierten Modell in der vorliegenden Form nicht
         direkt möglich. Das Modell speichert keine exakten Textpassagen oder vollständige Sätze, sondern abstrahiert statistische
@@ -121,8 +133,7 @@
         Im konkreten Projekt wurde ausschließlich mit gemeinfreien Texten aus dem Gutenberg-Projekt gearbeitet,
         wodurch keine datenschutzrechtlichen Risiken bestehen. Würde jedoch ein ähnliches Modell mit personenbezogenen
         oder urheberrechtlich geschützten Daten trainiert werden, könnten sich potenzielle Datenschutzprobleme
-        ergeben, insbesondere im Hinblick auf die Reproduzierbarkeit sensibler Informationen. In solchen Fällen wären
-        zusätzliche Schutzmaßnahmen wie Differential Privacy oder gezielte Regularisierung notwendig.
+        ergeben, insbesondere im Hinblick auf die Reproduzierbarkeit sensibler Informationen.
     </p>
 
 </section>
