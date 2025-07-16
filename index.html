@@ -58,7 +58,8 @@
             Vermeidung von Overfitting.</li>
         <li>Implementierung eines Early-Stopping-Mechanismus beim Training, der den Validierungsverlust überwacht und
             das Training bei stagnierender Verbesserung abbricht.</li>
-        <li>In der Webanwendung: Überprüfung der Eingabe, damit nur Wörter eingegeben werden können.</li>
+        <li>In der Webanwendung: Eingabe in das Textfeld wird überprüft, damit nur Wörter und keine Sonderzeichen
+            eingegeben werden können.</li>
     </ul>
 
     <h3>Fachlich</h3>
@@ -66,11 +67,13 @@
         Die Anwendung basiert auf einem zweischichtigen LSTM-Netzwerk mit jeweils 100 Einheiten, das mit einer Einbettungsschicht
         (Embedding-Dimension 64) gestartet wird. Die Wahl dieser Architektur wurde nach experimentellen Tests getroffen,
         um ein Gleichgewicht zwischen Modellkomplexität und Rechenaufwand zu gewährleisten. Die Trainingsdaten stammen aus
-        dem Projekt Gutenberg, sorgfältig vorverarbeitet.
+        dem Projekt Gutenberg und wurden sorgfältig vorverarbeitet.
     </p>
     <p>
-        Zur Vorbereitung der Daten wurden die Rohdaten aus dem Gutenberg-Projekt zunächst in Sätze segmentiert.
-        Sätze mit weniger als 3 Wörtern wurden ausgeschlossen. Wörter die weniger als 3 mal im Text vorkommen,
+        Zur Vorbereitung der Daten wurden die Rohdaten aus dem Gutenberg-Projekt zunächst anhand ihrer Satzzeichen (!
+        ? .)
+        in Sätze segmentiert.
+        Sätze mit weniger als 3 Wörtern wurden ausgeschlossen. Wörter, die weniger als 3 mal im Text vorkommen,
         wurden auch ausgeschlossen. Dadurch
         entstand ein Vokabular von 4642 Wörtern.
     </p>
@@ -80,13 +83,14 @@
         Die Loss-Funktion ist kategorische Kreuzentropie, der Optimierer Adam mit einer initialen Lernrate von 0.001, die im Feintuning auf 0.00001 gesenkt wurde.
     </p>
     <p>
-        Beim Training des Modells wurde ein mehrstufiger Ansatz verfolgt: Zunächst wurde das Modell über mehrere
-        Trainingsrunden mit einer moderaten Lernrate trainiert, um eine solide Grundbasis zu schaffen. Danach
+        Beim Training des Modells wurde ein mehrstufiger Ansatz verfolgt: Zunächst wurde das Modell
+        mit einer moderaten Lernrate und einem kleinen Datensatz trainiert, um eine solide Grundbasis zu schaffen.
+        Danach
         erfolgte ein Feintuning mit deutlich reduzierter Lernrate. In jeder Runde wurde die Datenmenge erhöht. Zwischen
         den
         Trainingsphasen wurde das Modell
         regelmäßig anhand eines Validierungsdatensatzes evaluiert, um Overfitting zu vermeiden und den Trainingsprozess
-        optimal zu steuern. Das mehrstufige Training führte zu einer stabileren Konvergenz und besseren Generalisierung auf unbekannte Texte.
+        optimal zu steuern.
     </p>
     <p>
         Die finale Validierungsgenauigkeit lag bei ca 7,4 % für k = 1. Über die Trainingszeit zeigte sich eine
@@ -113,7 +117,7 @@
         Trainings basierend auf dem Validierungsverlust unterstützte eine robuste Modellbildung. Dennoch zeigen die Ergebnisse,
         dass die Modellarchitektur und Hyperparameter noch weiter optimiert werden können, etwa durch Erhöhung der Embedding-Dimension, mehr LSTM-Schichten oder experimentelles Feintuning der Lernrate.
     </p>
-    <h3>Datenschutzbetrachtung: Rekonstruktion der Trainingsdaten</h3>
+    <p><b>Datenschutzbetrachtung: Rekonstruktion der Trainingsdaten</b></p>
     <p>
         Die Rekonstruktion der ursprünglichen Trainingsdaten ist mit dem trainierten Modell in der vorliegenden Form nicht
         direkt möglich. Das Modell speichert keine exakten Textpassagen oder vollständige Sätze, sondern abstrahiert statistische
